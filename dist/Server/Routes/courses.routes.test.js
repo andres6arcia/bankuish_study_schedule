@@ -12,17 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const configurations_1 = __importDefault(require("../configurations"));
-const server_1 = __importDefault(require("./server"));
-const supertest_1 = __importDefault(require("supertest"));
+const configurations_1 = __importDefault(require("../../configurations"));
+const courses_routes_1 = __importDefault(require("./courses.routes"));
 const chai_1 = __importDefault(require("chai"));
 const expect = chai_1.default.expect;
-describe('Server', () => {
-    it('The server is up', () => __awaiter(void 0, void 0, void 0, function* () {
-        const app = new server_1.default().getApp();
-        const response = yield (0, supertest_1.default)(app).get(configurations_1.default.SERVER.ROUTES.INDEX).set('accept', 'application/json');
-        expect(response.headers["content-type"]).to.match(new RegExp(/json/));
-        expect(response.status).to.equal(200);
-        expect(response.body.state).to.match(new RegExp(configurations_1.default.SERVER.MESSAGES.SERVER_STATE_RUNNING));
+const routes = courses_routes_1.default.stack;
+describe('Courses Routes', () => {
+    it('POST ' + configurations_1.default.SERVER.ROUTES.POST_COURSES + ' Route', () => __awaiter(void 0, void 0, void 0, function* () {
+        expect(routes.some(x => Object.keys(x.route.methods).includes('post'))).to.equal(true);
+        expect(routes.some(x => x.route.path === configurations_1.default.SERVER.ROUTES.POST_COURSES)).to.equal(true);
+    }));
+    it('GET ' + configurations_1.default.SERVER.ROUTES.GET_COURSES + ' Route', () => __awaiter(void 0, void 0, void 0, function* () {
+        expect(routes.some(x => Object.keys(x.route.methods).includes('get'))).to.equal(true);
+        expect(routes.some(x => x.route.path === configurations_1.default.SERVER.ROUTES.GET_COURSES)).to.equal(true);
     }));
 });

@@ -3,6 +3,7 @@ import express from "express"
 import morgan from "morgan"
 
 import indexRoutes from './Routes/index.route' 
+import coursesRoutes from './Routes/courses.routes'
 
 export default class Server {
     protected app: express.Application
@@ -33,6 +34,7 @@ export default class Server {
 
     protected async routes() {
         this.app.use(indexRoutes)
+        this.app.use(coursesRoutes)
     }
 
     protected async start() {

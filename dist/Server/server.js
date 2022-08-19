@@ -16,6 +16,7 @@ const configurations_1 = __importDefault(require("../configurations"));
 const express_1 = __importDefault(require("express"));
 const morgan_1 = __importDefault(require("morgan"));
 const index_route_1 = __importDefault(require("./Routes/index.route"));
+const courses_routes_1 = __importDefault(require("./Routes/courses.routes"));
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
@@ -43,6 +44,7 @@ class Server {
     routes() {
         return __awaiter(this, void 0, void 0, function* () {
             this.app.use(index_route_1.default);
+            this.app.use(courses_routes_1.default);
         });
     }
     start() {
