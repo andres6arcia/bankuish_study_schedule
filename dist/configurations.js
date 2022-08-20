@@ -43,10 +43,48 @@ exports.default = {
         NON_EXISTING_USER: 'XXXX',
         TEST_DATA: { "userId": "testing", "courses": [{ "desiredCourse": "test" }] },
         CYCLIC_COURSE: { "userId": "cyclic", "courses": [{ "desiredCourse": "cycle_test", "requiredCourse": "cycle_test" }] },
-        CYCLIC_COURSES: { "userId": "multiple_cyclic", "courses": [
+        CYCLIC_COURSES: {
+            "userId": "multiple_cyclic", "courses": [
                 { "desiredCourse": "course1", "requiredCourse": "course2" }, { "desiredCourse": "course2", "requiredCourse": "course1" }
-            ] },
+            ]
+        },
         MUST_RETURN_ERROR: 'Must return an error',
-        CYCLIC_ERROR: 'Maximum call stack size exceeded'
+        CYCLIC_ERROR: 'Maximum call stack size exceeded',
+        E2E_COMPLEX_DATA: {
+            "userId": "e2e_testing", "courses": [
+                { "desiredCourse": "10", "requiredCourse": ["3", "11"] },
+                { "desiredCourse": "9", "requiredCourse": ["11", "8"] },
+                { "desiredCourse": "2", "requiredCourse": "11" },
+                { "desiredCourse": "8", "requiredCourse": ["3", "7"] },
+                { "desiredCourse": "11", "requiredCourse": ["5", "7"] },
+                { "desiredCourse": "3" },
+                { "desiredCourse": "7" },
+                { "desiredCourse": "5" },
+            ]
+        },
+        E2E_COMPLEX_DATA_SOLUTION: ["7", "5", "11", "2", "3", "10", "8", "9"],
+        E2E_OTHER_DATA: {
+            "userId": "e2e_simple", "courses": [
+                { "desiredCourse": "Calculus I", "requiredCourse": "Algebra" },
+                { "desiredCourse": "Algorithms", "requiredCourse": "Logyc I" },
+                { "desiredCourse": "Algebra" },
+                { "desiredCourse": "OOP", "requiredCourse": "Algorithms" },
+            ]
+        },
+        E2E_OTHER_DATA_SOLUTION: ["Algebra", "Calculus I", "Logyc I", "Algorithms", "OOP"],
+        E2E_NUMERIC_DATA: {
+            "userId": "e2e_other", "courses": [
+                { "desiredCourse": "3", "requiredCourse": "2" },
+                { "desiredCourse": "1", "requiredCourse": ["3", "4"] },
+                { "desiredCourse": "2", "requiredCourse": "5" },
+                { "desiredCourse": "0", "requiredCourse": ["5", "4"] },
+                { "desiredCourse": "5" },
+                { "desiredCourse": "4" }
+            ]
+        },
+        E2E_NUMERIC_DATA_SOLUTION: ["5", "2", "3", "4", "1", "0"],
+    },
+    FIREBASE: {
+        GOOGLE_APPLICATION_CREDENTIALS: 'E:\Escritorio\firebase-key.json'
     }
 };

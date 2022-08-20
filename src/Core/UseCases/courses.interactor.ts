@@ -22,6 +22,7 @@ export default class CoursesInteractor {
             if (!rawData.courses) throw Error(this.configurations.CORE.MESSAGES.MISSING_COURSES)
             rawData.courses.map((rawCourse: any) => {
                 if (!rawCourse.desiredCourse) throw Error(this.configurations.CORE.MESSAGES.MISSING_DESIRED_COURSE)
+                if (rawCourse.requiredCourse && Array.isArray(rawCourse.requiredCourse)) rawCourse.requiredCourse = rawCourse.requiredCourse.join(',')
                 const course: Course = { ...rawCourse, userId: rawData.userId }
                 courses.push(course)
             })
@@ -38,19 +39,34 @@ export default class CoursesInteractor {
     }
 
 
-    public async getCourses(userId: string): Promise<{ ok: boolean, message: string, data: Array<Course | null> }> {
+    public async getCourses(userId: string): Promise<{ ok: boolean, message: string, data: Array<string | null> }> {
         try {
 
             if (!userId) throw Error(this.configurations.CORE.MESSAGES.USER_NOT_FOUND)
-            // Get all user courses and sort it 
-            const courses = await this.coursesOutput.getAll(userId)
-            const sortedCourses: any = this.topoSort(courses, this.configurations)
+
+            // Get all user courses
+            let courses = await this.coursesOutput.getAll(userId)
             if (!courses.length) return { ok: true, message: this.configurations.CORE.MESSAGES.USER_WITHOUT_COURSES, data: [] }
 
-            // List all courses sorted starting with the required course of first element
-            let list = []
-            if (sortedCourses[0].requiredCourse) list.push(sortedCourses[0].requiredCourse)
-            list = [...list, ...sortedCourses.map((x: any) => x.desiredCourse)]
+            // Transform the lists of requiredCourses on arrays
+            courses = courses.map((x: any) => {
+                return { userId: x.userId, desiredCourse: x.desiredCourse, requiredCourse: x.requiredCourse ? x.requiredCourse.split(',') : [] }
+            })
+
+            // If there is a prerequisite not existing on courses, I have to create it
+            courses.forEach((x: any) => {
+                x.requiredCourse.forEach((y: any) => {
+                    if (!courses.find(m => m.desiredCourse == y)) {
+                        const newCourse: any = { userId: x.userId, desiredCourse: y, requiredCourse: [] }
+                        courses.push(newCourse)
+                    }
+                })
+            })
+
+            // Sort courses and generate the result list
+            const sortedCourses: any = this.topoSort(courses, this.configurations)
+            let list = [...sortedCourses.map((x: any) => x.desiredCourse)]
+
             return { ok: true, message: this.configurations.CORE.MESSAGES.GET_OK, data: list }
 
         } catch (error: any) { throw Error(error.message) }
@@ -64,9 +80,8 @@ export default class CoursesInteractor {
         function depthFirstSearch(courses: any) {
             for (let course of courses) {
                 if (!visited.has(course.desiredCourse)) {
-                    if (course.desiredCourse == course.requiredCourse) throw Error(configurations.CORE.MESSAGES.CYCLE_COURSE_FOUND)
-                    let resp = courseMap.get(course.requiredCourse)
-                    depthFirstSearch(!resp ? [] : [resp])
+                    if (course.desiredCourse == course.requiredCourse.toString()) throw Error(configurations.CORE.MESSAGES.CYCLE_COURSE_FOUND)
+                    depthFirstSearch(course.requiredCourse.map((id: any) => courseMap.get(id)));
                 }
                 visited.add(course)
             }

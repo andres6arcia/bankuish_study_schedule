@@ -1,5 +1,5 @@
-import configurations from '../configurations';
-import Server from './server'
+import configurations from './configurations';
+import Server from './Server/server'
 import request from 'supertest'
 import chai from 'chai'
 
@@ -10,7 +10,7 @@ function sleep(ms: number) { return new Promise(resolve => setTimeout(resolve, m
 
 describe('Server', () => {
 
-    before(async ()=>{
+    before(async () => {
         await sleep(1000) // Wait for create instances
     })
 
@@ -52,6 +52,34 @@ describe('Courses Controllers', () => {
         expect(response.headers["content-type"]).to.match(new RegExp(/json/));
         expect(response.status).to.equal(200);
         expect(response.body.ok).to.equal(true)
+    })
+
+})
+
+describe('E2E', () => {
+
+    it('Send user courses with a complex known solution', async () => {
+        let response = await request(app).post(configurations.SERVER.ROUTES.POST_COURSES).set('accept', 'application/json').send(configurations.TEST.E2E_COMPLEX_DATA)
+        expect(response.body.ok).to.equal(true)
+        response = await request(app).get(configurations.SERVER.ROUTES.GET_COURSES.replace(':userId', configurations.TEST.E2E_COMPLEX_DATA.userId)).set('accept', 'application/json')
+        expect(response.body.ok).to.equal(true)
+        expect(response.body.data).to.satisfy((x: any) => x.toString() == configurations.TEST.E2E_COMPLEX_DATA_SOLUTION.toString())
+    })
+
+    it('Send a simple graph with a known solution', async () => {
+        let response = await request(app).post(configurations.SERVER.ROUTES.POST_COURSES).set('accept', 'application/json').send(configurations.TEST.E2E_NUMERIC_DATA)
+        expect(response.body.ok).to.equal(true)
+        response = await request(app).get(configurations.SERVER.ROUTES.GET_COURSES.replace(':userId', configurations.TEST.E2E_NUMERIC_DATA.userId)).set('accept', 'application/json')
+        expect(response.body.ok).to.equal(true)
+        expect(response.body.data).to.satisfy((x: any) => x.toString() == configurations.TEST.E2E_NUMERIC_DATA_SOLUTION.toString())
+    })
+
+    it('Send a simple courses example', async () => {
+        let response = await request(app).post(configurations.SERVER.ROUTES.POST_COURSES).set('accept', 'application/json').send(configurations.TEST.E2E_OTHER_DATA)
+        expect(response.body.ok).to.equal(true)
+        response = await request(app).get(configurations.SERVER.ROUTES.GET_COURSES.replace(':userId', configurations.TEST.E2E_OTHER_DATA.userId)).set('accept', 'application/json')
+        expect(response.body.ok).to.equal(true)
+        expect(response.body.data).to.satisfy((x: any) => x.toString() == configurations.TEST.E2E_OTHER_DATA_SOLUTION.toString())
     })
 
 })

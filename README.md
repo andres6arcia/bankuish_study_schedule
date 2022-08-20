@@ -4,7 +4,6 @@ Develop a service implementation that can create a study schedule that lists cou
 Create a backend REST service that will receive the list of desired micro-courses in JSON format. The payload data is not organized in any specific order.
 
 ## TODO: 
-* Pruebas E2E
 * Autenticación con Firebase
 
 ## Instrucciones para ejecutar el proyecto

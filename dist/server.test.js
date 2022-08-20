@@ -12,8 +12,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const configurations_1 = __importDefault(require("../configurations"));
-const server_1 = __importDefault(require("./server"));
+const configurations_1 = __importDefault(require("./configurations"));
+const server_1 = __importDefault(require("./Server/server"));
 const supertest_1 = __importDefault(require("supertest"));
 const chai_1 = __importDefault(require("chai"));
 const expect = chai_1.default.expect;
@@ -55,5 +55,28 @@ describe('Courses Controllers', () => {
         expect(response.headers["content-type"]).to.match(new RegExp(/json/));
         expect(response.status).to.equal(200);
         expect(response.body.ok).to.equal(true);
+    }));
+});
+describe('E2E', () => {
+    it('Send user courses with a complex known solution', () => __awaiter(void 0, void 0, void 0, function* () {
+        let response = yield (0, supertest_1.default)(app).post(configurations_1.default.SERVER.ROUTES.POST_COURSES).set('accept', 'application/json').send(configurations_1.default.TEST.E2E_COMPLEX_DATA);
+        expect(response.body.ok).to.equal(true);
+        response = yield (0, supertest_1.default)(app).get(configurations_1.default.SERVER.ROUTES.GET_COURSES.replace(':userId', configurations_1.default.TEST.E2E_COMPLEX_DATA.userId)).set('accept', 'application/json');
+        expect(response.body.ok).to.equal(true);
+        expect(response.body.data).to.satisfy((x) => x.toString() == configurations_1.default.TEST.E2E_COMPLEX_DATA_SOLUTION.toString());
+    }));
+    it('Send a simple graph with a known solution', () => __awaiter(void 0, void 0, void 0, function* () {
+        let response = yield (0, supertest_1.default)(app).post(configurations_1.default.SERVER.ROUTES.POST_COURSES).set('accept', 'application/json').send(configurations_1.default.TEST.E2E_NUMERIC_DATA);
+        expect(response.body.ok).to.equal(true);
+        response = yield (0, supertest_1.default)(app).get(configurations_1.default.SERVER.ROUTES.GET_COURSES.replace(':userId', configurations_1.default.TEST.E2E_NUMERIC_DATA.userId)).set('accept', 'application/json');
+        expect(response.body.ok).to.equal(true);
+        expect(response.body.data).to.satisfy((x) => x.toString() == configurations_1.default.TEST.E2E_NUMERIC_DATA_SOLUTION.toString());
+    }));
+    it('Send a simple courses example', () => __awaiter(void 0, void 0, void 0, function* () {
+        let response = yield (0, supertest_1.default)(app).post(configurations_1.default.SERVER.ROUTES.POST_COURSES).set('accept', 'application/json').send(configurations_1.default.TEST.E2E_OTHER_DATA);
+        expect(response.body.ok).to.equal(true);
+        response = yield (0, supertest_1.default)(app).get(configurations_1.default.SERVER.ROUTES.GET_COURSES.replace(':userId', configurations_1.default.TEST.E2E_OTHER_DATA.userId)).set('accept', 'application/json');
+        expect(response.body.ok).to.equal(true);
+        expect(response.body.data).to.satisfy((x) => x.toString() == configurations_1.default.TEST.E2E_OTHER_DATA_SOLUTION.toString());
     }));
 });

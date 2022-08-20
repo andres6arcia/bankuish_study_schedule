@@ -22,7 +22,7 @@ class CoursesInput {
         return await this.coursesInteractor.addCourses(rawData)
     }
 
-    public async getCourses(userId: string): Promise<{ ok: boolean, message: string, data: Array<Course | null> }> {
+    public async getCourses(userId: string): Promise<{ ok: boolean, message: string, data: Array<string | null> }> {
         return await this.coursesInteractor.getCourses(userId)
     }
 
